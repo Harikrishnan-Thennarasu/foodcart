@@ -142,6 +142,7 @@ const Home = () => {
                         <Text style={styles.cardText}>Reach us at : 9854562142</Text>
                     </View>
                     <Button
+                        onPress={onGoToCart}
                         containerStyle={styles.buttonContainer}
                         color={"black"}>BOOK A TABLE</Button>
                 </Card>
@@ -179,6 +180,7 @@ const Home = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "white"
     },
     header: {
         position: "absolute",

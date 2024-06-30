@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { CheckBox, Divider } from "@rneui/base";
 import FoodItem from "../components/FoodItem";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { onDeliveryOptionChange } from '../redux/cartSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { onDeliveryOptionChange, resetAllData } from '../redux/cartSlice';
 import { FOODS } from "./Home";
+import { onDisplayNotification } from "../utilities/functions";
 
 const MyCart = () => {
+    const dispatch = useDispatch();
     const navigation = useNavigation();
     const [showAll, setShowAll] = useState(false);
     let myCartItems = useSelector(state => state.myCart.items);
@@ -43,6 +45,28 @@ const MyCart = () => {
 
     const totalPrice = myCartItems.reduce((total, item) => total + item.price, 0);
 
+    const OnPlaceOrder = () => {
+
+        let body = '';
+        if (deliveryOption === 'DINE_IN') {
+            body = "Success! Your order has been successfully placed. We look forward to serving you shortly. Please make yourself comfortable."
+        } else {
+            body = "Success! Your order has been successfully placed for takeaway. We will notify you when it's ready for pickup. Thank you for choosing us!"
+        }
+        Alert.alert('', 'Your order placed', [
+            {
+                text: "OK",
+                onPress: () => {
+                    dispatch(resetAllData())
+                    onDisplayNotification({
+                        title: "FoodCart",
+                        body: body
+                    })
+                    navigation.pop();
+                }
+            }
+        ])
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -76,7 +100,7 @@ const MyCart = () => {
                             )}
                             <Text style={styles.deliveryOptionsTitle}>Delivery Options</Text>
                             <View style={styles.deliveryOptionsContainer}>
-                                <TouchableOpacity onPress={() => { onDeliveryOptionChange('DINE_IN') }} style={styles.deliveryOption}>
+                                <TouchableOpacity onPress={() => { dispatch(onDeliveryOptionChange('DINE_IN')) }} style={styles.deliveryOption}>
                                     <MaterialIcons size={20} color={'black'} name={"fastfood"} />
                                     <Text style={styles.deliveryOptionText}>Dine-In</Text>
                                     <CheckBox
@@ -86,11 +110,11 @@ const MyCart = () => {
                                         checkedColor={"orange"}
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { onDeliveryOptionChange('TAKE_AWAY') }} style={styles.deliveryOption}>
+                                <TouchableOpacity onPress={() => { dispatch(onDeliveryOptionChange('TAKE_WAY')) }} style={styles.deliveryOption}>
                                     <MaterialCommunityIcons size={20} color={'black'} name={"truck-delivery-outline"} />
-                                    <Text style={styles.deliveryOptionText}>Take away</Text>
+                                    <Text style={styles.deliveryOptionText}>Take way</Text>
                                     <CheckBox
-                                        checked={deliveryOption === 'TAKE_AWAY'}
+                                        checked={deliveryOption === 'TAKE_WAY'}
                                         checkedIcon="dot-circle-o"
                                         uncheckedIcon="circle-o"
                                         checkedColor={"orange"}
@@ -113,6 +137,7 @@ const MyCart = () => {
             />
 
             <TouchableOpacity
+                onPress={OnPlaceOrder}
                 activeOpacity={0.5}
                 style={styles.placeOrderButton}>
                 <Text style={styles.placeOrderText}>PLACE ORDER</Text>

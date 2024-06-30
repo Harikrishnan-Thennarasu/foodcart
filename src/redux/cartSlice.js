@@ -58,9 +58,13 @@ const cartSlice = createSlice({
         },
         onDeliveryOptionChange(state, action) {
             state.deliveryOption = action.payload;
+        },
+        resetAllData(state, action) {
+            state.deliveryOption = 'DINE_IN';
+            state.items = [];
         }
-    }
+    },
 })
 
-export const { onCartItemChange, onDeliveryOptionChange } = cartSlice.actions;
+export const { onCartItemChange, onDeliveryOptionChange, resetAllData } = cartSlice.actions;
 export default cartSlice.reducer;
