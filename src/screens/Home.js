@@ -8,74 +8,74 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button, Divider } from "@rneui/base";
 import FoodItem from "../components/FoodItem";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 export const FOODS = [
     {
         "id": 1,
         "title": "Guac da la Costa",
         "description": "corn tortillas, passion fruit, mango",
-        "price": "€7"
+        "price": 7
     },
     {
         "id": 2,
         "title": "Classic Burger",
         "description": "beef patty, lettuce, tomato, cheese, pickles",
-        "price": "€10"
+        "price": 10
     },
     {
         "id": 3,
         "title": "Caesar Salad",
         "description": "romaine lettuce, croutons, parmesan cheese, Caesar dressing",
-        "price": "€8"
+        "price": 8
     },
     {
         "id": 4,
         "title": "Margherita Pizza",
         "description": "tomato sauce, mozzarella cheese, basil",
-        "price": "€9"
+        "price": 9
     },
     {
         "id": 5,
         "title": "Spaghetti Carbonara",
         "description": "spaghetti, pancetta, egg, parmesan cheese, black pepper",
-        "price": "€12"
+        "price": 12
     },
     {
         "id": 6,
         "title": "Chicken Tacos",
         "description": "grilled chicken, corn tortillas, avocado, salsa",
-        "price": "€11"
+        "price": 11
     },
     {
         "id": 7,
         "title": "Vegetable Stir Fry",
         "description": "mixed vegetables, soy sauce, garlic, ginger",
-        "price": "€9"
+        "price": 9
     },
     {
         "id": 8,
         "title": "Grilled Salmon",
         "description": "salmon fillet, lemon, herbs, steamed vegetables",
-        "price": "€15"
+        "price": 15
     },
     {
         "id": 9,
         "title": "French Onion Soup",
         "description": "caramelized onions, beef broth, Gruyère cheese, croutons",
-        "price": "€6"
+        "price": 6
     },
     {
         "id": 10,
         "title": "Chocolate Lava Cake",
         "description": "molten chocolate cake, vanilla ice cream",
-        "price": "€7"
+        "price": 7
     }
 ]
 
 const Home = () => {
-
     const navigation = useNavigation();
-    console.log(navigation,'LLLLLLLLLLLLLLLLL')
+    const myCartItems = useSelector(state => state.myCart.items);
 
     const onExit = () => {
         Alert.alert('Exit', 'Are you sure you want to exit?',
@@ -96,9 +96,14 @@ const Home = () => {
             }
         )
     }
+    const slectedNoOfFood = myCartItems.filter((item) => item.quantity > 0).length;
 
     const onGoToCart = () => {
-        navigation.navigate('MYCART')
+        if (slectedNoOfFood > 0) {
+            navigation.navigate('MYCART');
+        } else {
+            Alert.alert('Info', 'Your cart is empty! Please select some food items to proceed.')
+        }
     }
 
     return (
@@ -165,7 +170,7 @@ const Home = () => {
                 activeOpacity={0.5}
                 style={styles.cartButton}>
                 <MaterialCommunityIcons size={20} style={styles.cartIcon} color={"white"} name={"cart-variant"} />
-                <Text style={styles.cartText}>VIEW CART (5 ITEMS)</Text>
+                <Text style={styles.cartText}>VIEW CART ({slectedNoOfFood} ITEMS)</Text>
             </TouchableOpacity>
         </View>
     )

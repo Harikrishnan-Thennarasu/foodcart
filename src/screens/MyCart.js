@@ -1,23 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { FOODS } from "./Home";
 import { CheckBox, Divider } from "@rneui/base";
 import FoodItem from "../components/FoodItem";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { onDeliveryOptionChange } from '../redux/cartSlice';
+import { FOODS } from "./Home";
 
 const MyCart = () => {
     const navigation = useNavigation();
     const [showAll, setShowAll] = useState(false);
-    const [deliveryOption, setDeliveryOption] = useState('DINE_IN');
+    let myCartItems = useSelector(state => state.myCart.items);
+    const deliveryOption = useSelector(state => state.myCart.deliveryOption);
 
     const onGoBack = () => {
         navigation.pop()
     }
 
-    const itemsToShow = showAll ? FOODS : FOODS.slice(0, 2);
+    const allSelectedItems = useMemo(() => {
+        const result = [];
+        for (let i = 0; i < myCartItems.length; i++) {
+            let item = myCartItems[i];
+            if (item.quantity !== 0) {
+                const slectedFood = FOODS.find((food) => food.id == item.id)
+                result.push(slectedFood);
+            }
+        }
+        return result;
+    }, [showAll, myCartItems]);
+
+    const itemsToShow = showAll ? allSelectedItems : allSelectedItems.slice(0, 2);
+
+    useEffect(() => {
+        const slectedFood = myCartItems.some((item) => item.quantity > 0);
+        if (!slectedFood) {
+            onGoBack();
+        }
+    }, [myCartItems])
+
+    const totalPrice = myCartItems.reduce((total, item) => total + item.price, 0);
 
     return (
         <View style={styles.container}>
@@ -31,7 +55,7 @@ const MyCart = () => {
                 <View style={styles.totalCostContainer}>
                     <View style={styles.totalCostBox}>
                         <Text style={styles.totalCostLabel}>Total Cost</Text>
-                        <Text style={styles.totalCostValue}>€30.00</Text>
+                        <Text style={styles.totalCostValue}>€{totalPrice}.00</Text>
                     </View>
                 </View>
             </View>
@@ -45,14 +69,14 @@ const MyCart = () => {
                 ListFooterComponent={() => {
                     return (
                         <View>
-                            {!showAll && FOODS.length > 3 && (
+                            {!showAll && allSelectedItems.length > 2 && (
                                 <TouchableOpacity onPress={() => setShowAll(true)}>
                                     <Text style={styles.showMoreText}>Show More</Text>
                                 </TouchableOpacity>
                             )}
                             <Text style={styles.deliveryOptionsTitle}>Delivery Options</Text>
                             <View style={styles.deliveryOptionsContainer}>
-                                <TouchableOpacity onPress={() => { setDeliveryOption('DINE_IN') }} style={styles.deliveryOption}>
+                                <TouchableOpacity onPress={() => { onDeliveryOptionChange('DINE_IN') }} style={styles.deliveryOption}>
                                     <MaterialIcons size={20} color={'black'} name={"fastfood"} />
                                     <Text style={styles.deliveryOptionText}>Dine-In</Text>
                                     <CheckBox
@@ -62,7 +86,7 @@ const MyCart = () => {
                                         checkedColor={"orange"}
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { setDeliveryOption('TAKE_AWAY') }} style={styles.deliveryOption}>
+                                <TouchableOpacity onPress={() => { onDeliveryOptionChange('TAKE_AWAY') }} style={styles.deliveryOption}>
                                     <MaterialCommunityIcons size={20} color={'black'} name={"truck-delivery-outline"} />
                                     <Text style={styles.deliveryOptionText}>Take away</Text>
                                     <CheckBox
