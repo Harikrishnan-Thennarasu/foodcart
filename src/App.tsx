@@ -1,13 +1,15 @@
 
-import MyCart from './screens/MyCart';
-import RestaurantItems from './screens/RestaurantItems';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import StackNavigation from '../navigation/StackNavigation';
 
 const App = () => {
   return (
-    <SafeAreaProvider>
-      <MyCart />
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <SafeAreaProvider>
+        <StackNavigation />
+      </SafeAreaProvider>
+    </NavigationContainer>
   );
 }
 

@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { FOODS } from "./RestaurantItems";
+import { FOODS } from "./Home";
 import { CheckBox, Divider } from "@rneui/base";
 import FoodItem from "../components/FoodItem";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from "@react-navigation/native";
 
 const MyCart = () => {
+    const navigation = useNavigation();
     const [showAll, setShowAll] = useState(false);
     const [deliveryOption, setDeliveryOption] = useState('DINE_IN');
 
     const onGoBack = () => {
-
+        navigation.pop()
     }
 
     const itemsToShow = showAll ? FOODS : FOODS.slice(0, 2);

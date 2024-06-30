@@ -7,6 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button, Divider } from "@rneui/base";
 import FoodItem from "../components/FoodItem";
+import { useNavigation } from "@react-navigation/native";
 
 export const FOODS = [
     {
@@ -71,7 +72,11 @@ export const FOODS = [
     }
 ]
 
-const RestaurantItems = () => {
+const Home = () => {
+
+    const navigation = useNavigation();
+    console.log(navigation,'LLLLLLLLLLLLLLLLL')
+
     const onExit = () => {
         Alert.alert('Exit', 'Are you sure you want to exit?',
             [
@@ -90,6 +95,10 @@ const RestaurantItems = () => {
                 cancelable: true
             }
         )
+    }
+
+    const onGoToCart = () => {
+        navigation.navigate('MYCART')
     }
 
     return (
@@ -152,6 +161,7 @@ const RestaurantItems = () => {
                 keyExtractor={(item) => item.id.toString()}
             />
             <TouchableOpacity
+                onPress={onGoToCart}
                 activeOpacity={0.5}
                 style={styles.cartButton}>
                 <MaterialCommunityIcons size={20} style={styles.cartIcon} color={"white"} name={"cart-variant"} />
@@ -251,4 +261,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default RestaurantItems;
+export default Home;
